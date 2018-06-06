@@ -56,8 +56,15 @@ public class AliPayAPI {
 	public void sendPayReq(AliPayReq2 aliPayReq2){
 		aliPayReq2.send();
 	}
-    
-    
+
+	/**
+	 * 发送支付宝支付请求
+	 * @param aliPayReq2
+	 */
+	public void sendPayRequest(AliPayReq2 aliPayReq2){
+		aliPayReq2.request();
+	}
+
     /**
      * 支付宝支付配置
      * @author Administrator

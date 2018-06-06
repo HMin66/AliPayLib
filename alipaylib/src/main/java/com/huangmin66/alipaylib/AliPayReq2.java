@@ -32,6 +32,8 @@ public class AliPayReq2 {
 
 	private Activity mActivity;
 
+	//后台返回订单信息
+	private String orderInfo;
 	//未签名的订单信息
 	private String rawAliPayOrderInfo;
 	//服务器签名成功的订单信息
@@ -127,6 +129,32 @@ public class AliPayReq2 {
 		payThread.start();
 	}
 
+	/**
+	 * 发送支付宝支付请求
+	 */
+	public void request() {
+
+		Runnable payRunnable = new Runnable() {
+
+			@Override
+			public void run() {
+				// 构造PayTask 对象
+				PayTask alipay = new PayTask(mActivity);
+				// 调用支付接口，获取支付结果
+				String result = alipay.pay(orderInfo,true);
+
+				Message msg = new Message();
+				msg.what = SDK_PAY_FLAG;
+				msg.obj = result;
+				mHandler.sendMessage(msg);
+			}
+		};
+
+		// 必须异步调用
+		Thread payThread = new Thread(payRunnable);
+		payThread.start();
+	}
+
 	
 	/**
 	 * 创建订单信息
@@ -206,7 +234,8 @@ public class AliPayReq2 {
 	public static class Builder{
 		//上下文
 		private Activity activity;
-
+		//后台返回orderInfo
+		private String orderInfo;
 		//未签名的订单信息
 		private String rawAliPayOrderInfo;
 		//服务器签名成功的订单信息
@@ -221,6 +250,11 @@ public class AliPayReq2 {
 			return this;
 		}
 
+		//后台返回orderInfo
+		public Builder setOrderInfo(String orderInfo){
+			this.orderInfo = orderInfo;
+			return this;
+		}
 
 		/**
 		 * 设置未签名的订单信息
@@ -245,6 +279,7 @@ public class AliPayReq2 {
 		public AliPayReq2 create(){
 			AliPayReq2 aliPayReq = new AliPayReq2();
 			aliPayReq.mActivity = this.activity;
+			aliPayReq.orderInfo = this.orderInfo;
 			aliPayReq.rawAliPayOrderInfo = this.rawAliPayOrderInfo;
 			aliPayReq.signedAliPayOrderInfo = this.signedAliPayOrderInfo;
 
